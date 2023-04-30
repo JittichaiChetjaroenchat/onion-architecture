@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Application.Persistence;
+﻿using Application.Persistence;
 using DotNet.Testcontainers.Builders;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -10,10 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence;
 using Testcontainers.MySql;
+using Xunit;
 
-namespace Api.IntegrationTest
+namespace Api.IntegrationTest2
 {
-    public class TestWebApplicationFactory : WebApplicationFactory<Program>
+    public class TestWebApplicationFactory<TProgram, TDbContext> : WebApplicationFactory<TProgram>, IAsyncLifetime 
+        where TProgram : class where TDbContext : DbContext
     {
         private readonly string Database = "test_database";
         private readonly string Username = "test_user";
@@ -33,9 +32,6 @@ namespace Api.IntegrationTest
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(OriginalPort))
                 .WithCleanUp(true)
                 .Build();
-
-            // Start database container
-            Task.Run(() => _dbContainer.StartAsync()).Wait();
         }
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -79,13 +75,8 @@ namespace Api.IntegrationTest
             });
         }
 
-        public override async ValueTask DisposeAsync()
-        {
-            if (_dbContainer != null)
-            {
-                // Stop database container
-                await _dbContainer.StopAsync();
-            }
-        }
+        public async Task InitializeAsync() => await _dbContainer.StartAsync();
+
+        public new async Task DisposeAsync() => await _dbContainer.DisposeAsync();
     }
 }

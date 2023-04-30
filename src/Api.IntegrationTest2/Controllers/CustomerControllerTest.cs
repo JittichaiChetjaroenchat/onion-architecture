@@ -1,52 +1,29 @@
-using System;
-using System.Net.Http;
-using System.Net.Mime;
+﻿using System.Net.Mime;
 using System.Text;
-using System.Threading.Tasks;
+using Api.IntegrationTest2.Attributes;
 using Application.CQRS.Commands.Customer;
 using Application.CQRS.Queries.Customer;
 using Domain.Models;
 using FluentAssertions;
-using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
-using NUnit.Framework;
+using Persistence;
+using Xunit;
 
-namespace Api.IntegrationTest.Controllers
+namespace Api.IntegrationTest2.Controllers
 {
-    [TestFixture]
-    public class CustomerControllerTest
+    [TestCaseOrderer("Api.IntegrationTest2.Attributes.PriorityOrderer", "Api.IntegrationTest2")]
+    public class CustomerControllerTest : IntegrationTestBase
     {
-        private TestWebApplicationFactory _factory;
-        private HttpClient _client;
-
         private static Guid _customerId = Guid.Empty;
         private static string _customerName = "Jittichai";
         private static int _customerAge = 35;
 
-        [OneTimeSetUp]
-        public void OneTimeSetup()
+        public CustomerControllerTest(TestWebApplicationFactory<Program, DatabaseContext> factory)
+            : base(factory)
         {
-            _factory = new TestWebApplicationFactory();
-            _client = _factory.CreateClient();
-
-            _client.DefaultRequestHeaders.Add(HeaderNames.Authorization, TestAuthenticationHandler.TOKEN);
         }
 
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            if (_client != null)
-            {
-                _client.Dispose();
-            }
-
-            if (_factory != null)
-            {
-                _factory.Dispose();
-            }
-        }
-
-        [Test, Order(1)]
+        [Fact, TestPriority(1)]
         public async Task CreateCustomer_WithValidData_ShouldBeCreated()
         {
             // Arrange
@@ -59,37 +36,38 @@ namespace Api.IntegrationTest.Controllers
             var payloadStringContent = new StringContent(payloadJson, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             // Act
-            var response = await _client.PostAsync("/api/customers", payloadStringContent).ConfigureAwait(false);
+            var response = await Client.PostAsync("/api/customers", payloadStringContent).ConfigureAwait(false);
             var resultJson = await response.Content.ReadAsStringAsync();
             var resultObject = JsonConvert.DeserializeObject<Response<CreateCustomerResponse>>(resultJson);
+            _customerId = resultObject?.Data?.Id ?? Guid.Empty;
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
 
-            _customerId = resultObject.Data.Id;
+            resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
         }
 
-        [Test, Order(2)]
+        [Fact, TestPriority(2)]
         public async Task GetCustomerById_WithValidData_ShouldBeRetrieved()
         {
             // Arrange
 
             // Act
-            var response = await _client.GetAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
+            var response = await Client.GetAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
             var resultJson = await response.Content.ReadAsStringAsync();
             var resultObject = JsonConvert.DeserializeObject<Response<GetCustomerByIdResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
-            resultObject.Data.Should().NotBeNull();
-            resultObject.Data.Id.Should().Be(_customerId);
-            resultObject.Data.Name.Should().Be(_customerName);
-            resultObject.Data.Age.Should().Be(_customerAge);
+
+            resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
+            resultObject?.Data.Should().NotBeNull();
+            resultObject?.Data.Id.Should().Be(_customerId);
+            resultObject?.Data.Name.Should().Be(_customerName);
+            resultObject?.Data.Age.Should().Be(_customerAge);
         }
 
-        [Test, Order(3)]
+        [Fact, TestPriority(3)]
         public async Task UpdateCustomer_WithValidData_ShouldBeUpdated()
         {
             // Arrange
@@ -104,50 +82,52 @@ namespace Api.IntegrationTest.Controllers
             var payloadStringContent = new StringContent(payloadJson, Encoding.UTF8, MediaTypeNames.Application.Json);
 
             // Act
-            var response = await _client.PutAsync($"/api/customers/{_customerId}", payloadStringContent).ConfigureAwait(false);
+            var response = await Client.PutAsync($"/api/customers/{_customerId}", payloadStringContent).ConfigureAwait(false);
             var resultJson = await response.Content.ReadAsStringAsync();
             var resultObject = JsonConvert.DeserializeObject<Response<UpdateCustomerResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
 
-            resultObject.Data.Should().NotBeNull();
-            resultObject.Data.Id.Should().Be(_customerId);
-            resultObject.Data.Name.Should().Be(_customerName);
-            resultObject.Data.Age.Should().Be(_customerAge);
+            resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
+            resultObject?.Data.Should().NotBeNull();
+            resultObject?.Data.Id.Should().Be(_customerId);
+            resultObject?.Data.Name.Should().Be(_customerName);
+            resultObject?.Data.Age.Should().Be(_customerAge);
         }
 
-        [Test, Order(4)]
+        [Fact, TestPriority(4)]
         public async Task DeleteCustomer_WithValidData_ShouldBeDeleted()
         {
             // Arrange
 
             // Act
-            var response = await _client.DeleteAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
+            var response = await Client.DeleteAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
             var resultJson = await response.Content.ReadAsStringAsync();
             var resultObject = JsonConvert.DeserializeObject<Response<DeleteCustomerResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
-            resultObject.Data.Should().NotBeNull();
-            resultObject.Data.Success.Should().Be(true);
+
+            resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
+            resultObject?.Data.Should().NotBeNull();
+            resultObject?.Data.Success.Should().Be(true);
         }
 
-        [Test, Order(5)]
+        [Fact, TestPriority(5)]
         public async Task GetCustomerById_WithInvalidData_ShouldBeReturnStatusError()
         {
             // Arrange
 
             // Act
-            var response = await _client.GetAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
+            var response = await Client.GetAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
             var resultJson = await response.Content.ReadAsStringAsync();
             var resultObject = JsonConvert.DeserializeObject<Response<GetCustomerByIdResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Error);
+
+            resultObject?.Status.Should().Be(EnumResponseStatus.Error);
         }
     }
 }

@@ -1,7 +1,5 @@
-﻿using System.Net;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading.Tasks;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace Api.IntegrationTest.Controllers
@@ -22,15 +20,27 @@ namespace Api.IntegrationTest.Controllers
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            _client.Dispose();
-            _factory.Dispose();
+            if (_client != null)
+            {
+                _client.Dispose();
+            }
+
+            if (_factory != null)
+            {
+                _factory.Dispose();
+            }
         }
 
         [Test, Order(1)]
-        public async Task CreateCustomer_ShouldBeResponse()
+        public async Task HealthCheck_ShouldBeResponse()
         {
+            // Arrange
+
+            // Act
             var response = await _client.GetAsync("/health").ConfigureAwait(false);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Assert
+            response.EnsureSuccessStatusCode();
         }
     }
 }

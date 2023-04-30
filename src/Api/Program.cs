@@ -1,22 +1,18 @@
 using System;
-using System.Net;
 using Api.Configurations.Extensions;
 using Application;
-using Application.Helpers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
 using Persistence;
 using Repository;
 using Service;
 
 namespace Api
 {
-    public class Program
+    public partial class Program
     {
         public static void Main(string[] args)
         {

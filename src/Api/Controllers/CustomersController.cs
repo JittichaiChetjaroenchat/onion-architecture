@@ -2,7 +2,6 @@
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Api.Filters;
 using Application.CQRS.Commands.Customer;
 using Application.CQRS.Queries.Customer;
 using Application.Helpers;
