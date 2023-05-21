@@ -1,6 +1,7 @@
 using System;
 using Api.Configurations.Extensions;
 using Application;
+using Google.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
@@ -71,6 +72,7 @@ namespace Api
                 builder.Services.AddService();
                 builder.Services.AddRepository();
                 builder.Services.AddPersistence(builder.Configuration);
+                builder.Services.AddGoogleClient(builder.Configuration);
 
                 var app = builder.Build();
 
