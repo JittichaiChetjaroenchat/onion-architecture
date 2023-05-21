@@ -2,8 +2,9 @@
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Application.CQRS.Commands.Customer;
-using Application.CQRS.Queries.Customer;
+using Api.Controllers.Base;
+using Application.Handlers.Commands.Customer;
+using Application.Handlers.Queries.Customer;
 using Application.Helpers;
 using Domain.Models;
 using MediatR;

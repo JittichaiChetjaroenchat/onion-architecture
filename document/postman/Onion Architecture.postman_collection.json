@@ -1,0 +1,289 @@
+{
+	"info": {
+		"_postman_id": "2795df34-09a7-4fd2-9de2-c3f3290c6c90",
+		"name": "Onion Architecture",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4298841"
+	},
+	"item": [
+		{
+			"name": "Auth -> Register",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-ClientId",
+						"value": "12345",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"jonh\",\r\n    \"lastname\": \"doe\",\r\n    \"username\": \"john007\",\r\n    \"password\": \"!P@ssw0rd\",\r\n    \"email\": \"john007@gmail.com\",\r\n    \"phone_number\": \"0812345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/auth/register",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth -> Signin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"  pm.response.to.have.status(200);\r",
+							"\r",
+							"  const responseJson = pm.response.json();\r",
+							"  postman.setEnvironmentVariable(\"token\", responseJson.data.token);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-ClientId",
+						"value": "12345",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"john007@gmail.com\",\r\n    \"password\": \"!P@ssw0rd\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/auth/signin",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"auth",
+						"signin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer -> Create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 201\", function () {\r",
+							"  pm.response.to.have.status(201);\r",
+							"\r",
+							"  const responseJson = pm.response.json();\r",
+							"  postman.setEnvironmentVariable(\"customer_id\", responseJson.data.id);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-ClientId",
+						"value": "12345",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"jonathan\",\r\n    \"age\": 35\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/customers",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer -> Get",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-ClientId",
+						"value": "12345",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://localhost:5001/api/customers/{{customer_id}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"customers",
+						"{{customer_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer -> Update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-ClientId",
+						"value": "12345",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"{{customer_id}}\",\r\n    \"name\": \"joe\",\r\n    \"age\": 38\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/customers/{{customer_id}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"customers",
+						"{{customer_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Customer -> Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{token}}",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-ClientId",
+						"value": "12345",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://localhost:5001/api/customers/{{customer_id}}",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"customers",
+						"{{customer_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

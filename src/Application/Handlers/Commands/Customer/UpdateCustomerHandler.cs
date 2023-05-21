@@ -7,7 +7,7 @@ using Domain.Models;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace Application.CQRS.Commands.Customer
+namespace Application.Handlers.Commands.Customer
 {
     public class UpdateCustomerRequest : IRequest<Response<UpdateCustomerResponse>>
     {

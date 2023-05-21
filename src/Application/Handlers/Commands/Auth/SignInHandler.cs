@@ -9,7 +9,7 @@ using MediatR;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace Application.CQRS.Commands.Auth
+namespace Application.Handlers.Commands.Auth
 {
     public class SignInRequest : IRequest<Response<SignInResponse>>
     {

@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Application.CQRS.Commands.Auth;
+using Api.Controllers.Base;
+using Application.Handlers.Commands.Auth;
 using Domain.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

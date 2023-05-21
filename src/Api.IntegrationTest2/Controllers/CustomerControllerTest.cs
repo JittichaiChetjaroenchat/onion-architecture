@@ -1,8 +1,8 @@
 ﻿using System.Net.Mime;
 using System.Text;
 using Api.IntegrationTest2.Attributes;
-using Application.CQRS.Commands.Customer;
-using Application.CQRS.Queries.Customer;
+using Application.Handlers.Commands.Customer;
+using Application.Handlers.Queries.Customer;
 using Domain.Models;
 using FluentAssertions;
 using Newtonsoft.Json;

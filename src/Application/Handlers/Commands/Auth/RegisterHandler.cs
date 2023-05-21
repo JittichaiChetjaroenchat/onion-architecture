@@ -9,7 +9,7 @@ using Domain.Models.User;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace Application.CQRS.Commands.Auth
+namespace Application.Handlers.Commands.Auth
 {
     public class RegisterRequest : IRequest<Response<RegisterResponse>>
     {

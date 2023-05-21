@@ -7,7 +7,7 @@ using Domain.Models;
 using MediatR;
 using Newtonsoft.Json;
 
-namespace Application.CQRS.Queries.Customer
+namespace Application.Handlers.Queries.Customer
 {
     public class GetCustomerByIdRequest : IRequest<Response<GetCustomerByIdResponse>>
     {
