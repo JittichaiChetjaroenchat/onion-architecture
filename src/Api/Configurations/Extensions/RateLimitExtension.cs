@@ -30,6 +30,11 @@ namespace Api.Configurations.Extensions
             services.AddInMemoryRateLimiting();
         }
 
+        public static void UseIpRateLimit(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<IpRateLimitMiddleware>();
+        }
+
         public static void UseClientRateLimit(this IApplicationBuilder app)
         {
             app.UseMiddleware<ClientRateLimitMiddleware>();
