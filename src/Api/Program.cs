@@ -53,7 +53,8 @@ namespace Api
                 builder.Services.AddExceptionConfigure();
 
                 // Add client's rate limit
-                builder.Services.AddClientRateLimit(builder.Configuration);
+                //builder.Services.AddClientRateLimitInMemory(builder.Configuration);
+                builder.Services.AddClientRateLimitDistributedCache(builder.Configuration);
 
                 // Add localize
                 builder.Services.AddLocalize(builder.Configuration);
@@ -116,7 +117,6 @@ namespace Api
             }
             catch (Exception ex)
             {
-
             }
         }
     }

@@ -2,32 +2,60 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace Api.Configurations.Extensions
 {
     public static class RateLimitExtension
     {
-        public static void AddIpRateLimit(this IServiceCollection services, IConfiguration configuration)
+        public static void AddIpRateLimitInMemory(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddMemoryCache();
+            services.AddInMemoryRateLimiting();
+
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
-            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-            services.AddInMemoryRateLimiting();
         }
 
-        public static void AddClientRateLimit(this IServiceCollection services, IConfiguration configuration)
+        public static void AddIpRateLimitDistributedCache(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConnectionString = configuration.GetConnectionString("Redis");
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.ConfigurationOptions = ConfigurationOptions.Parse(redisConnectionString);
+            });
+            services.AddDistributedRateLimiting();
+
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
+
+            services.Configure<IpRateLimitOptions>(configuration.GetSection("IpRateLimiting"));
+        }
+
+        public static void AddClientRateLimitInMemory(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddMemoryCache();
+            services.AddInMemoryRateLimiting();
+
+            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
 
             services.Configure<ClientRateLimitOptions>(configuration.GetSection("ClientRateLimiting"));
-            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
+        }
+
+        public static void AddClientRateLimitDistributedCache(this IServiceCollection services, IConfiguration configuration)
+        {
+            var redisConnectionString = configuration.GetConnectionString("Redis");
+
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.ConfigurationOptions = ConfigurationOptions.Parse(redisConnectionString);
+            });
+            services.AddDistributedRateLimiting();
+
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
-            services.AddInMemoryRateLimiting();
+
+            services.Configure<ClientRateLimitOptions>(configuration.GetSection("ClientRateLimiting"));
         }
 
         public static void UseIpRateLimit(this IApplicationBuilder app)

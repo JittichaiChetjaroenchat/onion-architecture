@@ -10,17 +10,17 @@ namespace Persistence
     {
         public static void AddPersistence(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
+            var mySqlConnectionString = configuration.GetConnectionString("MySql");
 
             //// For Microsoft SQL Server
             //services.AddDbContext<DatabaseContext>(options =>
             //    options.UseSqlServer(connectionString));
 
             // For MySQl or MariaDB
-            var version = ServerVersion.AutoDetect(connectionString);
+            var version = ServerVersion.AutoDetect(mySqlConnectionString);
             services.AddDbContextPool<DatabaseContext>(options =>
             {
-                options.UseMySql(connectionString, version)
+                options.UseMySql(mySqlConnectionString, version)
                 .EnableSensitiveDataLogging()
                 .EnableDetailedErrors();
             });
