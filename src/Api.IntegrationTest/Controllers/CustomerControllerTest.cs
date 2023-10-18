@@ -60,14 +60,19 @@ namespace Api.IntegrationTest.Controllers
 
             // Act
             var response = await _client.PostAsync("/api/customers", payloadStringContent).ConfigureAwait(false);
-            var resultJson = await response.Content.ReadAsStringAsync();
-            var resultObject = JsonConvert.DeserializeObject<Response<CreateCustomerResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
 
-            _customerId = resultObject.Data.Id;
+            if (response.IsSuccessStatusCode)
+            {
+                var resultJson = await response.Content.ReadAsStringAsync();
+                var resultObject = JsonConvert.DeserializeObject<Response<CreateCustomerResponse>>(resultJson);
+
+                resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
+
+                _customerId = resultObject?.Data?.Id ?? Guid.Empty;
+            }
         }
 
         [Test, Order(2)]
@@ -77,16 +82,21 @@ namespace Api.IntegrationTest.Controllers
 
             // Act
             var response = await _client.GetAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
-            var resultJson = await response.Content.ReadAsStringAsync();
-            var resultObject = JsonConvert.DeserializeObject<Response<GetCustomerByIdResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
-            resultObject.Data.Should().NotBeNull();
-            resultObject.Data.Id.Should().Be(_customerId);
-            resultObject.Data.Name.Should().Be(_customerName);
-            resultObject.Data.Age.Should().Be(_customerAge);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resultJson = await response.Content.ReadAsStringAsync();
+                var resultObject = JsonConvert.DeserializeObject<Response<GetCustomerByIdResponse>>(resultJson);
+
+                resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
+                resultObject?.Data.Should().NotBeNull();
+                resultObject?.Data.Id.Should().Be(_customerId);
+                resultObject?.Data.Name.Should().Be(_customerName);
+                resultObject?.Data.Age.Should().Be(_customerAge);
+            }
         }
 
         [Test, Order(3)]
@@ -105,17 +115,21 @@ namespace Api.IntegrationTest.Controllers
 
             // Act
             var response = await _client.PutAsync($"/api/customers/{_customerId}", payloadStringContent).ConfigureAwait(false);
-            var resultJson = await response.Content.ReadAsStringAsync();
-            var resultObject = JsonConvert.DeserializeObject<Response<UpdateCustomerResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
 
-            resultObject.Data.Should().NotBeNull();
-            resultObject.Data.Id.Should().Be(_customerId);
-            resultObject.Data.Name.Should().Be(_customerName);
-            resultObject.Data.Age.Should().Be(_customerAge);
+            if (response.IsSuccessStatusCode)
+            {
+                var resultJson = await response.Content.ReadAsStringAsync();
+                var resultObject = JsonConvert.DeserializeObject<Response<UpdateCustomerResponse>>(resultJson);
+
+                resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
+                resultObject?.Data.Should().NotBeNull();
+                resultObject?.Data.Id.Should().Be(_customerId);
+                resultObject?.Data.Name.Should().Be(_customerName);
+                resultObject?.Data.Age.Should().Be(_customerAge);
+            }
         }
 
         [Test, Order(4)]
@@ -125,14 +139,19 @@ namespace Api.IntegrationTest.Controllers
 
             // Act
             var response = await _client.DeleteAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
-            var resultJson = await response.Content.ReadAsStringAsync();
-            var resultObject = JsonConvert.DeserializeObject<Response<DeleteCustomerResponse>>(resultJson);
 
             // Assert
             response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Ok);
-            resultObject.Data.Should().NotBeNull();
-            resultObject.Data.Success.Should().Be(true);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var resultJson = await response.Content.ReadAsStringAsync();
+                var resultObject = JsonConvert.DeserializeObject<Response<DeleteCustomerResponse>>(resultJson);
+
+                resultObject?.Status.Should().Be(EnumResponseStatus.Ok);
+                resultObject?.Data.Should().NotBeNull();
+                resultObject?.Data.Success.Should().Be(true);
+            }
         }
 
         [Test, Order(5)]
@@ -142,12 +161,17 @@ namespace Api.IntegrationTest.Controllers
 
             // Act
             var response = await _client.GetAsync($"/api/customers/{_customerId}").ConfigureAwait(false);
-            var resultJson = await response.Content.ReadAsStringAsync();
-            var resultObject = JsonConvert.DeserializeObject<Response<GetCustomerByIdResponse>>(resultJson);
 
             // Assert
-            response.EnsureSuccessStatusCode();
-            resultObject.Status.Should().Be(EnumResponseStatus.Error);
+            Assert.False(response.IsSuccessStatusCode);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var resultJson = await response.Content.ReadAsStringAsync();
+                var resultObject = JsonConvert.DeserializeObject<Response<GetCustomerByIdResponse>>(resultJson);
+
+                resultObject?.Status.Should().Be(EnumResponseStatus.Error);
+            }
         }
     }
 }

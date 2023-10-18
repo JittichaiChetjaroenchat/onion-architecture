@@ -37,7 +37,7 @@ namespace Api.IntegrationTest.Controllers
             // Arrange
 
             // Act
-            var response = await _client.GetAsync("/health").ConfigureAwait(false);
+            var response = await _client.GetAsync("/healthcheck").ConfigureAwait(false);
 
             // Assert
             response.EnsureSuccessStatusCode();

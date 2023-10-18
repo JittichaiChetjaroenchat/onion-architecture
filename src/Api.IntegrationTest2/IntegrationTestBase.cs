@@ -5,7 +5,8 @@ using Xunit;
 
 namespace Api.IntegrationTest2
 {
-    public class IntegrationTestBase : IClassFixture<TestWebApplicationFactory<Program, DatabaseContext>>
+    [CollectionDefinition("IntegrationTestBaseCollection")]
+    public class IntegrationTestBase : ICollectionFixture<TestWebApplicationFactory<Program, DatabaseContext>>
     {
         public readonly TestWebApplicationFactory<Program, DatabaseContext> Factory;
         public readonly HttpClient Client;

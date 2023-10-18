@@ -36,7 +36,7 @@ namespace Api.Controllers
             var payload = new GetCustomerByIdRequest { Id = id };
             var result = await _mediator.Send(payload);
 
-            return Ok(result);
+            return result.Status == EnumResponseStatus.Ok ? Ok(result) : BadRequest(result);
         }
 
         [HttpPost]
@@ -47,9 +47,13 @@ namespace Api.Controllers
         public async Task<IActionResult> CreateAsync([FromBody] CreateCustomerRequest payload)
         {
             var result = await _mediator.Send(payload);
-            var uri = UriHelper.BuildLocation(HttpContext.Request, result.Data.Id);
+            if (result.Status == EnumResponseStatus.Ok)
+            {
+                var uri = UriHelper.BuildLocation(HttpContext.Request, result.Data.Id);
+                return Created(uri, result);
+            }
 
-            return Created(uri, result);
+            return BadRequest(result);
         }
 
         [HttpPut("{id:guid}")]
@@ -62,7 +66,7 @@ namespace Api.Controllers
             payload.Id = id;
             var result = await _mediator.Send(payload);
 
-            return Ok(result);
+            return result.Status == EnumResponseStatus.Ok ? Ok(result) : BadRequest(result);
         }
 
         [HttpDelete("{id:guid}")]
@@ -75,7 +79,7 @@ namespace Api.Controllers
             var payload = new DeleteCustomerRequest { Id = id };
             var result = await _mediator.Send(payload);
 
-            return Ok(result);
+            return result.Status == EnumResponseStatus.Ok ? Ok(result) : BadRequest(result);
         }
     }
 }
